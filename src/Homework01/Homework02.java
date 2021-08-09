@@ -2,11 +2,12 @@ package Homework01;
 
 public class Homework02 {
     public static void main(String[] args) {
-        Task1();
-        Task2();
-        Task3();
-        Task4();
-        Task5();
+      //  Task1();
+      //  Task2();
+      //  Task3();
+      //  Task4();
+      //  Task5();
+        System.out.println(Task6(new int[]{2, 2, 2, 1, 2, 2, 10, 1}));
 
     }
     //1. Задать целочисленный массив, состоящий из элементов 0 и 1. Например: [ 1, 1, 0, 0, 1, 0, 1, 1, 0, 0 ].
@@ -56,7 +57,7 @@ public class Homework02 {
                 if (i == j || i == matrixSize-j-1) {
                     matrix[i][j] = 1;
                 }
-                System.out.print(matrix[i][j]);
+                System.out.print(matrix[i][j] + " ");
             }
             System.out.println();
         }
@@ -77,7 +78,24 @@ public class Homework02 {
     // вернуть true, если в массиве есть место, в котором сумма левой и правой части массива равны.
     // Примеры: checkBalance([2, 2, 2, 1, 2, 2, || 10, 1]) → true, checkBalance([1, 1, 1, || 2, 1]) → true,
     // граница показана символами ||, эти символы в массив не входят.
-
+    public static boolean Task6 (int array[]) {
+        boolean isEqual = false;
+        for (int i = 0; i < array.length; i++) {
+            int sumBefore = 0;
+            int sumAfter = 0;
+            for (int j = 0;j <= i;j++) {
+                sumBefore = sumBefore + array[j];
+            }
+            for (int j = i+1;j < array.length;j++) {
+                sumAfter = sumAfter + array[j];
+            }
+           if (sumAfter == sumBefore) {
+                System.out.println("Нашёл!");
+                isEqual = true;
+            }
+        }
+    return isEqual;
+    }
     //7. **** Написать метод, которому на вход подается одномерный массив и число n (может быть положительным,
     // или отрицательным), при этом метод должен сместить все элементы массива на n позиций. Элементы смещаются
     // циклично. Для усложнения задачи нельзя пользоваться вспомогательными массивами. Примеры: [ 1, 2, 3 ]
