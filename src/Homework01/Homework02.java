@@ -6,8 +6,8 @@ public class Homework02 {
       //  Task2();
       //  Task3();
       //  Task4();
-        Task5();
-     //   System.out.println(Task6(new int[]{2, 2, 2, 1, 2, 2, 10, 1}));
+      //  Task5();
+      //   System.out.println(Task6(new int[]{2, 2, 2, 1, 2, 2, 10, 1}));
 
         int[] arr1 = {1,2,3,4,5};
         for (int o:arr1) {
@@ -24,14 +24,14 @@ public class Homework02 {
     public static void Task1 () {
         int[] array = { 1, 1, 0, 0, 1, 0, 1, 1, 0, 0 };
        for (int o :array) {
-            switch (o) {
-                case 0:
-                    o = 1;
-                    break;
-                case 1:
-                    o = 0;
-                    break;
-            }
+           switch (o) {
+               case 0:
+                   o = 1;
+                   break;
+               case 1:
+                   o = 0;
+                   break;
+           }
             System.out.print(o + " ");
             }
         System.out.println();
