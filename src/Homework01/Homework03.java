@@ -1,5 +1,6 @@
 package Homework01;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -32,17 +33,12 @@ public class Homework03 {
         Random random = new Random();
         int target = random.nextInt(words.length);
         System.out.println("Target word: "+ words[target]);
-        String userWord = " ";
+        String userWord;
         char[] hiddenWord = new char[15];
-        String hw;
-
-        // for (char o:hiddenWord) {
-        ///    o = 35;
-        //    System.out.print(o);
-      //  }
+        Arrays.fill(hiddenWord, (char) 35);
         do {
             System.out.print("Hidden word: ");
-           // print1DArray(hiddenWord);
+            print1DArray(hiddenWord);
             Scanner sc = new Scanner(System.in);
             System.out.println("Input your word: ");
             userWord = sc.nextLine();
@@ -51,15 +47,13 @@ public class Homework03 {
                 break;
             }
             for (int i = 0; i < words[target].length(); i++) {
-                if (words[target].charAt(i) == userWord.charAt(i)) {
-                    hiddenWord[i] = userWord.charAt(i);
-                } else {
-                    hiddenWord[i] = 35;
+                if (userWord.length() > i) {
+                    if (words[target].charAt(i) == userWord.charAt(i)) {
+                        hiddenWord[i] = userWord.charAt(i);
+                    }
                 }
-              //  System.out.println(words[target].charAt(i));
-            }
-    //        System.out.println("Your word: " + userWord);
 
+            }
         } while (!userWord.equals(words[target]));
         System.out.println("Good bye!");
 
@@ -68,26 +62,8 @@ public class Homework03 {
 
     public static void print1DArray(char [] arr) {
         for (char c : arr) {
-            System.out.print(c + " ");
+            System.out.print(c);
         }
         System.out.println();
     }
-
-    public static void print2DArray(int[][] arr) {
-        for (int i = 0; i <= arr[0].length; i++) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
-        for (int i = 0; i < arr.length; i++) {
-            System.out.print(i + 1 + " ");
-            for (int j = 0; j < arr[i].length; j++) {
-                System.out.print(arr[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-
-
-
-
 }
