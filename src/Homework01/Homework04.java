@@ -136,62 +136,54 @@ public class Homework04 {
         if (field[0][2] == symbol && field[1][2] == symbol && field[2][2] == symbol) {
             return true;
         }
-*//*
-        boolean isColumn = false;
-        int i = 0;
-            do {
-                for (int j=0; j< field.length;j++) {
-
-                    System.out.println("check " + i + ", " + j);
-                if (field[i][j] != symbol) {
-                    isColumn = false;
-                } else {
-                    isColumn = true;
-                }
-
-                }
-                i++;
-            } while (isColumn && i<field.length);
-
-        System.out.println(isColumn);
-        if (isColumn) {return isColumn;}
 */
+        boolean isRow = false;
+        int i = 0;
+        for (i = 0;i< field.length;i++) {
+            int j = 0;
+            do {
+      //          System.out.println("check row " + i + ", pos " + j);
+                isRow = field[i][j] == symbol;
+                j++;
+                } while (isRow && j < field.length);
+            System.out.println("Row " + i + " is "+ isRow);
+            if (isRow) return true;
+        }
+
+        // vertical
+        boolean isCol = false;
+        i = 0;
+        for (i = 0;i< field.length;i++) {
+            int j = 0;
+            do {
+             //   System.out.println("check col " + i + ", pos " + j);
+                isCol = field[j][i] == symbol;
+                j++;
+            } while (isCol && j < field.length);
+            System.out.println("Col " + i + " is "+ isCol);
+            if (isCol) return true;
+
+        }
+
         // diagonals
         boolean isDiag = false;
-        boolean isDiag2 = false;
-        int i = 0;
-        do {
-            if (field[i][i] != symbol) {
-                isDiag = false;
-            } else {
-                isDiag = true;
-            }
-            System.out.print(isDiag + " ");
-            i++;
-        } while (isDiag && i < field.length);
-        System.out.println(isDiag);
-        if (isDiag) {return isDiag;}
-
         i = 0;
         do {
-            if (field[i][field.length-i-1] != symbol) {
-                isDiag2 = false;
-            } else {
-                isDiag2 = true;
-            }
-            System.out.print(isDiag2 + " ");
+            isDiag = field[i][i] == symbol;
+            i++;
+        } while (isDiag && i < field.length);
+        System.out.println("Diag 1 is " + isDiag);
+        if (isDiag) return true;
+
+        boolean isDiag2 = false;
+        i = 0;
+        do {
+            isDiag2 = field[i][field.length - i - 1] == symbol;
             i++;
         } while (isDiag2 && i < field.length);
-        System.out.println(isDiag2);
-        if (isDiag2) {return isDiag2;}
+        System.out.println("Diag 2 is " + isDiag2);
+        if (isDiag2) return true;
 
-   /*     if (field[0][0] == symbol && field[1][1] == symbol && field[2][2] == symbol) {
-            return true;
-        }
-        if (field[0][2] == symbol && field[1][1] == symbol && field[2][0] == symbol) {
-            return true;
-        }
-*/
         return false;
     }
     static void doAIMove(char[][] field) {
