@@ -6,6 +6,7 @@ package Homework01;
   TODO 4.  *** Доработать искусственный интеллект, чтобы он мог блокировать ходы игрока.
 */
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -181,32 +182,27 @@ public class Homework04 {
 
     static int countDiag1 (char[][] field, int[] turn, char symbol) {
         int counter=0;
-        boolean isDiag=false;
         for (int i = 0; i < field.length; i++) {
             if (field[i][i] == symbol) {
-                if (turn[0] == i && turn[1] == i) {
-                    isDiag = true;
-                }
                 counter++;
             }
         }
-        if (isDiag) return counter;
-        return 0;
+        return counter;
     }
     static int countDiag2 (char[][] field, int[] turn, char symbol) {
         int counter=0;
-        boolean isDiag=false;
+     //   boolean isDiag=false;
             for (int i = 0; i < field.length; i++) {
                 if (field[i][field.length-i-1] == symbol) {
-                    if (turn[0] == i && turn[1] == field.length - i -1) {
-                        isDiag = true;
-                    }
+              //      if (turn[0] == i && turn[1] == field.length - i -1) {
+                 //       isDiag = true;
+                //    }
                     counter++;
                 }
             }
 
-        if (isDiag) return counter;
-        return 0;
+   //     if (isDiag) return counter;
+        return counter;
     }
     public static boolean isDiagonal(int size, int[] turn) {
         for (int i = 0; i < size; i++) {
@@ -222,7 +218,7 @@ public class Homework04 {
     static int countCol (char[][] field, int[] turn, char symbol) {
         int colCounter=0;
         for (int i = 0; i < field.length; i++) {
-            if (isXOCell(field, i, turn[1], 'X')) {
+            if (isXOCell(field, i, turn[1], symbol)) {
                 colCounter++;
             }
         }
@@ -232,7 +228,7 @@ public class Homework04 {
     static int countRow(char[][] field, int[] turn, char symbol) {
         int rowCounter=0;
         for (int i = 0; i < field.length; i++) {
-            if (isXOCell(field,turn[0], i, 'X')) {
+            if (isXOCell(field,turn[0], i, symbol)) {
                 rowCounter++;
             }
         }
@@ -343,10 +339,59 @@ public class Homework04 {
 
 
     static int[] doAIMove(char[][] field, int[] turn) {
-    //    int[] analysis = analyzePlayerMove(field,turn);
-     //   System.out.println(isDiagonal(field.length, turn));
-        int[] move = doRandomAIMove(field);
-        System.out.printf("My turn is %s %s %n",move[0]+1,move[1]+1);
+        int[] move = new int[2];
+        System.out.println("Твой ход был "+ (turn[0]+1) + " " + (turn[1]+1));
+        //  System.out.printf("По линии %s:%n X:%s%n O:%s%n -:%s%n",turn[0]+1,countRow(field, turn,'X'),countRow(field, turn,'O'), countRow(field, turn,'-'));
+        int[] maxX = new int[4];
+        if (countRow(field, turn, 'O') == 0) {
+            maxX[0]=countRow(field, turn,'X');
+        }
+        if (countCol(field, turn, 'O') == 0) {
+            maxX[1]=countCol(field, turn,'X');
+        }
+        if (countDiag1(field, turn, 'O') == 0) {
+            maxX[2]=countDiag1(field, turn,'X');
+        }
+        if (countDiag2(field, turn, 'O') == 0) {
+            maxX[3]=countDiag1(field, turn,'X');
+        }
+        int maxDanger = Arrays.stream(maxX).max().getAsInt();
+        System.out.println(maxDanger);
+        System.out.println(countDiag1(field, turn,'O'));
+        System.out.println(countDiag1(field, turn,'X'));
+
+        if (countRow(field, turn,'X') == maxDanger && countRow(field, turn, '-') > 0) {
+            System.out.println("Блокируем вертикальную линию "+ (turn[0]+1));
+            move[0] = turn[0];
+            Random random = new Random();
+            do {
+                move[1] = random.nextInt(field.length);
+            } while (isNotFreeCell(field, move[0], move[1]));
+        } else if (countCol(field, turn, 'X') == maxDanger && countCol(field, turn, '-') > 0) {
+            System.out.println("Блокируем горизонтальную линию " + (turn[1] + 1));
+            move[1] = turn[1];
+            Random random = new Random();
+            do {
+                move[0] = random.nextInt(field.length);
+            } while (isNotFreeCell(field, move[0], move[1]));
+        } else if (countDiag1(field, turn, 'X') == maxDanger && countDiag1(field, turn, '-') > 0) {
+            System.out.println("Блокируем диагональную линию 1");
+            Random random = new Random();
+            do {
+                move[1] = move[0] = random.nextInt(field.length);
+                //  move[1] = field.length - random.nextInt(field.length) - 1;
+            } while (isNotFreeCell(field, move[0], move[1]));
+        } else if (countDiag2(field, turn, 'X') == maxDanger && countDiag2(field, turn, '-') > 0) {
+            System.out.println("Блокируем диагональную линию 2");
+            Random random = new Random();
+            do {
+                move[0] = random.nextInt(field.length);
+                move[1] = field.length - random.nextInt(field.length) - 1;
+            } while (isNotFreeCell(field, move[0], move[1]));
+        } else {
+            move = doRandomAIMove(field);
+        }
+        System.out.printf("Мой ход %s %s %n",move[0]+1,move[1]+1);
         field[move[0]][move[1]] = 'O';
         return new int[] {move[0],move[1]};
     }
