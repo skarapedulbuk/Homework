@@ -174,8 +174,8 @@ public class Homework04 {
         return false;
     }
     static boolean isWin(char[][]field, int[] turn, char symbol) {
-        return countRow(field, turn, symbol) == field.length
-                || countCol(field, turn, symbol) == field.length
+        return countV(field, turn, symbol) == field.length
+                || countH(field, turn, symbol) == field.length
                 || countDiag1(field, turn, symbol) == field.length
                 || countDiag2(field, turn, symbol) == field.length;
     }
@@ -215,7 +215,7 @@ public class Homework04 {
         }
         return false;
     }
-    static int countCol (char[][] field, int[] turn, char symbol) {
+    static int countH(char[][] field, int[] turn, char symbol) {
         int colCounter=0;
         for (int i = 0; i < field.length; i++) {
             if (isXOCell(field, i, turn[1], symbol)) {
@@ -225,7 +225,7 @@ public class Homework04 {
     //    System.out.printf("Number of X-cells at col %s: %s %n", turn[1], colCounter);
         return colCounter;
     }
-    static int countRow(char[][] field, int[] turn, char symbol) {
+    static int countV(char[][] field, int[] turn, char symbol) {
         int rowCounter=0;
         for (int i = 0; i < field.length; i++) {
             if (isXOCell(field,turn[0], i, symbol)) {
@@ -238,9 +238,9 @@ public class Homework04 {
 
     static int[] isPreWin(char[][] field, int[] turn) {
 // Проверка наличия крестиков в линиях последнего хода
-        int cellsInRow = countRow(field, turn, 'X');
+        int cellsInRow = countV(field, turn, 'X');
       //  System.out.println(cellsInRow);
-        int cellsInCol = countCol(field, turn, 'X');
+        int cellsInCol = countH(field, turn, 'X');
     //    System.out.println(cellsInCol);
         if (cellsInCol > cellsInRow && cellsInRow >= 1) {
             return new int[] {'v', cellsInCol};
@@ -255,9 +255,9 @@ public class Homework04 {
         System.out.println("Ваш последний ход: " + (turn[0]+1) + " " + (turn[1]+1));
 
         System.out.println("Проверка на победу... Длина поля: " + field.length);
-        int cellsInRow = countRow(field, turn, 'X');
+        int cellsInRow = countV(field, turn, 'X');
         System.out.printf("В текущем ряду Х стоит в %s клетках, ", cellsInRow);
-        int cellsInCol = countCol(field, turn, 'X');
+        int cellsInCol = countH(field, turn, 'X');
         System.out.printf("в текущей колонке Х стоит в %s клетках", cellsInCol);
         if (cellsInCol == field.length || cellsInRow == field.length) {
             System.out.println("Победа!");
@@ -265,10 +265,10 @@ public class Homework04 {
 
         System.out.println("Проверка опасности в линиях последнего хода...");
         System.out.println("Ищем О...");
-        if (countRow(field, turn, 'O') > 0) {
+        if (countV(field, turn, 'O') > 0) {
             System.out.println("В текущем ряду обнаружены О, опасности нет");
         }
-        if (countCol(field, turn, 'O') > 0) {
+        if (countH(field, turn, 'O') > 0) {
             System.out.println("В текущей колонке обнаружены О, опасности нет");
         }
         System.out.println("Ищем больше одного Х в линии...");
@@ -343,50 +343,61 @@ public class Homework04 {
         System.out.println("Твой ход был "+ (turn[0]+1) + " " + (turn[1]+1));
         //  System.out.printf("По линии %s:%n X:%s%n O:%s%n -:%s%n",turn[0]+1,countRow(field, turn,'X'),countRow(field, turn,'O'), countRow(field, turn,'-'));
         int[] maxX = new int[4];
-        if (countRow(field, turn, 'O') == 0) {
-            maxX[0]=countRow(field, turn,'X');
+        if (countV(field, turn, 'O') == 0) {
+            maxX[0]= countV(field, turn,'X');
         }
-        if (countCol(field, turn, 'O') == 0) {
-            maxX[1]=countCol(field, turn,'X');
+        if (countH(field, turn, 'O') == 0) {
+            maxX[1]= countH(field, turn,'X');
         }
         if (countDiag1(field, turn, 'O') == 0) {
             maxX[2]=countDiag1(field, turn,'X');
         }
         if (countDiag2(field, turn, 'O') == 0) {
-            maxX[3]=countDiag1(field, turn,'X');
+            maxX[3]=countDiag2(field, turn,'X');
         }
         int maxDanger = Arrays.stream(maxX).max().getAsInt();
         System.out.println(maxDanger);
-        System.out.println(countDiag1(field, turn,'O'));
-        System.out.println(countDiag1(field, turn,'X'));
+        System.out.println(countDiag2(field, turn,'X'));
+        System.out.println(countDiag2(field, turn,'-'));
+        System.out.println(countDiag2(field, turn,'O'));
 
-        if (countRow(field, turn,'X') == maxDanger && countRow(field, turn, '-') > 0) {
-            System.out.println("Блокируем вертикальную линию "+ (turn[0]+1));
+
+
+        if (countV(field, turn,'X') == maxDanger &&
+                countV(field, turn, '-') > 0 &&
+                countV(field, turn, 'O') == 0) {
+            System.out.println("Блокируем горизонтальную линию "+ (turn[0]+1));
             move[0] = turn[0];
             Random random = new Random();
             do {
                 move[1] = random.nextInt(field.length);
             } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (countCol(field, turn, 'X') == maxDanger && countCol(field, turn, '-') > 0) {
-            System.out.println("Блокируем горизонтальную линию " + (turn[1] + 1));
+        } else if (countH(field, turn, 'X') == maxDanger &&
+                countH(field, turn, '-') > 0 &&
+                countH(field, turn, 'O') == 0) {
+            System.out.println("Блокируем вертикальную линию " + (turn[1] + 1));
             move[1] = turn[1];
             Random random = new Random();
             do {
                 move[0] = random.nextInt(field.length);
             } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (countDiag1(field, turn, 'X') == maxDanger && countDiag1(field, turn, '-') > 0) {
+        } else if (countDiag1(field, turn, 'X') == maxDanger &&
+                countDiag1(field, turn, '-') > 0 &&
+                countDiag1(field, turn, 'O') == 0) {
             System.out.println("Блокируем диагональную линию 1");
             Random random = new Random();
             do {
                 move[1] = move[0] = random.nextInt(field.length);
                 //  move[1] = field.length - random.nextInt(field.length) - 1;
             } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (countDiag2(field, turn, 'X') == maxDanger && countDiag2(field, turn, '-') > 0) {
+        } else if (countDiag2(field, turn, 'X') == maxDanger &&
+                countDiag2(field, turn, '-') > 0 &&
+                countDiag2(field, turn, 'O') == 0) {
             System.out.println("Блокируем диагональную линию 2");
             Random random = new Random();
             do {
                 move[0] = random.nextInt(field.length);
-                move[1] = field.length - random.nextInt(field.length) - 1;
+                move[1] = field.length - move[0] - 1;
             } while (isNotFreeCell(field, move[0], move[1]));
         } else {
             move = doRandomAIMove(field);
