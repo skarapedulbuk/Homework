@@ -122,57 +122,6 @@ public class Homework04 {
         }
         return true;
     }
-    static boolean isWin_old(char[][] field, char symbol) {
-        // horizontal
-        boolean isRow;
-        int i;
-        for (i = 0;i< field.length;i++) {
-            int j = 0;
-            do {
-      //          System.out.println("check row " + i + ", pos " + j);
-                isRow = field[i][j] == symbol;
-                j++;
-                } while (isRow && j < field.length);
-            // System.out.println("Row " + i + " is "+ isRow);
-            if (isRow) return true;
-        }
-
-        // vertical
-        boolean isCol;
- //       i = 0;
-        for (i = 0;i< field.length;i++) {
-            int j = 0;
-            do {
-             //   System.out.println("check col " + i + ", pos " + j);
-                isCol = field[j][i] == symbol;
-                j++;
-            } while (isCol && j < field.length);
-            //System.out.println("Col " + i + " is "+ isCol);
-            if (isCol) return true;
-
-        }
-
-        // diagonals
-        boolean isDiag;
-        i = 0;
-        do {
-            isDiag = field[i][i] == symbol;
-            i++;
-        } while (isDiag && i < field.length);
-        //System.out.println("Diag 1 is " + isDiag);
-        if (isDiag) return true;
-
-        boolean isDiag2;
-        i = 0;
-        do {
-            isDiag2 = field[i][field.length - i - 1] == symbol;
-            i++;
-        } while (isDiag2 && i < field.length);
-        //System.out.println("Diag 2 is " + isDiag2);
-        if (isDiag2) return true;
-
-        return false;
-    }
     static boolean isWin(char[][]field, int[] turn, char symbol) {
         return countV(field, turn, symbol) == field.length
                 || countH(field, turn, symbol) == field.length
@@ -204,17 +153,6 @@ public class Homework04 {
    //     if (isDiag) return counter;
         return counter;
     }
-    public static boolean isDiagonal(int size, int[] turn) {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (i == j || i == size-j-1) {
-                 //   matrix[i][j] = 1;
-                    if (i == turn[0] && j == turn[1]) return true;
-                }
-            }
-        }
-        return false;
-    }
     static int countH(char[][] field, int[] turn, char symbol) {
         int colCounter=0;
         for (int i = 0; i < field.length; i++) {
@@ -236,108 +174,6 @@ public class Homework04 {
         return rowCounter;
     }
 
-    static int[] isPreWin(char[][] field, int[] turn) {
-// Проверка наличия крестиков в линиях последнего хода
-        int cellsInRow = countV(field, turn, 'X');
-      //  System.out.println(cellsInRow);
-        int cellsInCol = countH(field, turn, 'X');
-    //    System.out.println(cellsInCol);
-        if (cellsInCol > cellsInRow && cellsInRow >= 1) {
-            return new int[] {'v', cellsInCol};
-        } else if (cellsInRow > cellsInCol && cellsInCol >= 1) {
-            return new int[] {'h', cellsInRow};
-        } else {
-            return new int[] {' ', 1};
-        }
-    }
-
-    static void analiz (char[][] field, int[] turn) {
-        System.out.println("Ваш последний ход: " + (turn[0]+1) + " " + (turn[1]+1));
-
-        System.out.println("Проверка на победу... Длина поля: " + field.length);
-        int cellsInRow = countV(field, turn, 'X');
-        System.out.printf("В текущем ряду Х стоит в %s клетках, ", cellsInRow);
-        int cellsInCol = countH(field, turn, 'X');
-        System.out.printf("в текущей колонке Х стоит в %s клетках", cellsInCol);
-        if (cellsInCol == field.length || cellsInRow == field.length) {
-            System.out.println("Победа!");
-        }
-
-        System.out.println("Проверка опасности в линиях последнего хода...");
-        System.out.println("Ищем О...");
-        if (countV(field, turn, 'O') > 0) {
-            System.out.println("В текущем ряду обнаружены О, опасности нет");
-        }
-        if (countH(field, turn, 'O') > 0) {
-            System.out.println("В текущей колонке обнаружены О, опасности нет");
-        }
-        System.out.println("Ищем больше одного Х в линии...");
-
-
-        if (cellsInCol > cellsInRow && cellsInRow >= 1) {
-       //     return new int[] {'v', cellsInCol};
-        } else if (cellsInRow > cellsInCol && cellsInCol >= 1) {
-      //      return new int[] {'h', cellsInRow};
-        } else {
-      //      return new int[] {' ', 1};
-        }
-    }
-
-    static int[] analyzePlayerMove (char[][] field, int[] turn) {
-        int h, v;
-        int move[] = doRandomAIMove(field);;
-        int [] situation = isPreWin(field, turn);
-        char direction = (char) situation[0];
-        int line = field.length;
-        int quantity = situation[1];
-        Random random = new Random();
-        switch (direction) {
-            case 'h':
-                line = h = turn[0];
-                System.out.printf("!!! dangerous situation at %s line number %s has %s X-cells%n", direction, line+1, quantity);
-                do {
-                    v = random.nextInt(field.length);
-                } while (isNotFreeCell(field, h, v));
-                break;
-            case 'v':
-                line = v = turn[1];
-                System.out.printf("!!! Detected dangerous situation at %s line number %s has %s X-cells%n", direction, line+1, quantity);
-                System.out.println("Try to block it...");
-                //       Random random = new Random();
-                do {
-                    h = random.nextInt(field.length);
-                } while (isNotFreeCell(field, h, v));
-                break;
-            default:
-                move = doRandomAIMove(field);
-                h = move[0];
-                v = move[1];
-                break;
-        }
-
- /*       if (quantity > 1) {
-            System.out.printf("!!! Detected !!! %s line number %s has %s X-cells%n", direction, line+1, quantity);
-            Random random = new Random();
-            do {
-             //   hh = turn[0];
-                vv = random.nextInt(field.length);
-            } while (isNotFreeCell(field, hh, vv));
-        } else if (isXCol(field, turn)) {
-            Random random = new Random();
-            do {
-                h = random.nextInt(field.length);
-                v = turn[1];
-            } while (isNotFreeCell(field, h, v));
-        } else {
-
-
-        }*/
-        System.out.printf("Recomend turn for me is %s %s %n",h+1,v+1);
-        field[h][v] = 'O';
-        return move;
-    }
-
-
     static int[] doAIMove(char[][] field, int[] turn) {
         int[] move = new int[2];
         System.out.println("Твой ход был "+ (turn[0]+1) + " " + (turn[1]+1));
@@ -356,13 +192,10 @@ public class Homework04 {
             maxX[3]=countDiag2(field, turn,'X');
         }
         int maxDanger = Arrays.stream(maxX).max().getAsInt();
-        System.out.println(maxDanger);
-        System.out.println(countDiag2(field, turn,'X'));
-        System.out.println(countDiag2(field, turn,'-'));
-        System.out.println(countDiag2(field, turn,'O'));
-
-
-
+        //System.out.println(maxDanger);
+        //System.out.println(countDiag2(field, turn,'X'));
+        //System.out.println(countDiag2(field, turn,'-'));
+        //System.out.println(countDiag2(field, turn,'O'));
         if (countV(field, turn,'X') == maxDanger &&
                 countV(field, turn, '-') > 0 &&
                 countV(field, turn, 'O') == 0) {
