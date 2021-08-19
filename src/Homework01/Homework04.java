@@ -6,19 +6,12 @@ package Homework01;
   TODO 4.  *** Доработать искусственный интеллект, чтобы он мог блокировать ходы игрока.
 */
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
 public class Homework04 {
-    /*
-    Приветствую, Максим! Спасибо за хорошую подачу материала на лекциях!
-    Я планирую еще поработать над данным кодом, а именно, что бы AI не только блокировал ходы, но и старался выиграть.
-    Поэтому код получился несколько избыточным, в тех местах, где я это заметил, я отметил комментами.
-    К сожалению, времени сейчас исправить недочеты нет, но код полностью рабочий, на поле 5х5 AI непобедим (вроде:))
-    Прошу сильно за это не ругаться и учитывать при выставлении оценки за домашнее задание. Спасибо!
-     */
+  
     public static void main(String[] args) {
         start();
     }
@@ -166,6 +159,7 @@ public class Homework04 {
     static int doDetectDangerLine (char[][] field, int[] turn, char mySymbol, char yourSymbol) {
         // Параметры mySymbol и yourSymbol планируется использовать позднее при доработке AI
         int[] maxX = new int[4];
+        int indexMax = 0;
         if (countV(field, turn, mySymbol) == 0 && countV(field, turn, '-') > 0) {
             maxX[0]= countV(field, turn,yourSymbol);
         }
@@ -178,31 +172,36 @@ public class Homework04 {
         if (countDiag2(field, turn, mySymbol) == 0 && countDiag2(field, turn, '-') > 0) {
             maxX[3]=countDiag2(field, turn,yourSymbol);
         }
-        return Arrays.stream(maxX).max().getAsInt();
+        for (int i = 0; i < maxX.length; i++) {
+            if (maxX[i]>maxX[indexMax]) {
+                indexMax = i;
+            }
+        }
+        return indexMax;
     }
     static int[] doAIMove(char[][] field, int[] turn) { // Можно было использовать void, планируется использовать позднее при доработке AI
         System.out.println("Твой ход был "+ (turn[0]+1) + " " + (turn[1]+1));
         int[] move = new int[2];
         int dangerLine = doDetectDangerLine(field, turn, 'O','X');
         Random random = new Random();
-        if (countV(field, turn,'X') == dangerLine) {
+        if (dangerLine == 0 ) {
             System.out.println("Блокирую горизонтальную линию "+ (turn[0]+1));
             do {
                 move[0] = turn[0];
                 move[1] = random.nextInt(field.length);
             } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (countH(field, turn, 'X') == dangerLine) {
+        } else if (dangerLine == 1) {
             System.out.println("Блокирую вертикальную линию " + (turn[1] + 1));
             do {
                 move[0] = random.nextInt(field.length);
                 move[1] = turn[1];
             } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (countDiag1(field, turn, 'X') == dangerLine) {
+        } else if (dangerLine == 2) {
             System.out.println("Блокирую диагональную линию 1");
             do {
                 move[1] = move[0] = random.nextInt(field.length);
             } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (countDiag2(field, turn, 'X') == dangerLine) {
+        } else if (dangerLine == 3) {
             System.out.println("Блокирую диагональную линию 2");
             do {
                 move[0] = random.nextInt(field.length);
