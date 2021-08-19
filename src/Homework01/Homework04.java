@@ -9,6 +9,7 @@ package Homework01;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 public class Homework04 {
     public static void main(String[] args) {
@@ -102,6 +103,7 @@ public class Homework04 {
         return new int[]{h, v};
     }
 
+    // Следующие три метода позднее будут объединены в один.
     static boolean isFreeCell(char[][] field, int h, int v) {
         return field[h][v] == '-';
     }
@@ -123,13 +125,13 @@ public class Homework04 {
         return true;
     }
     static boolean isWin(char[][]field, int[] turn, char symbol) {
-        return countV(field, turn, symbol) == field.length
-                || countH(field, turn, symbol) == field.length
-                || countDiag1(field, turn, symbol) == field.length
-                || countDiag2(field, turn, symbol) == field.length;
+        return countV(field, turn, symbol) == field.length ||
+                countH(field, turn, symbol) == field.length ||
+                countDiag1(field, turn, symbol) == field.length ||
+                countDiag2(field, turn, symbol) == field.length;
     }
 
-    static int countDiag1 (char[][] field, int[] turn, char symbol) {
+    static int countDiag1 (char[][] field, int[] turn, char symbol) { // Параметр turn планируется использовать позднее при доработке AI
         int counter=0;
         for (int i = 0; i < field.length; i++) {
             if (field[i][i] == symbol) {
@@ -138,96 +140,63 @@ public class Homework04 {
         }
         return counter;
     }
-    static int countDiag2 (char[][] field, int[] turn, char symbol) {
+    static int countDiag2 (char[][] field, int[] turn, char symbol) { // Параметр turn планируется использовать позднее при доработке AI
         int counter=0;
-     //   boolean isDiag=false;
             for (int i = 0; i < field.length; i++) {
                 if (field[i][field.length-i-1] == symbol) {
-              //      if (turn[0] == i && turn[1] == field.length - i -1) {
-                 //       isDiag = true;
-                //    }
-                    counter++;
+                   counter++;
                 }
             }
-
-   //     if (isDiag) return counter;
         return counter;
     }
     static int countH(char[][] field, int[] turn, char symbol) {
-        int colCounter=0;
-        for (int i = 0; i < field.length; i++) {
-            if (isXOCell(field, i, turn[1], symbol)) {
-                colCounter++;
-            }
-        }
-    //    System.out.printf("Number of X-cells at col %s: %s %n", turn[1], colCounter);
-        return colCounter;
+        return (int) IntStream.range(0, field.length).filter(i -> isXOCell(field, i, turn[1], symbol)).count();
     }
     static int countV(char[][] field, int[] turn, char symbol) {
-        int rowCounter=0;
-        for (int i = 0; i < field.length; i++) {
-            if (isXOCell(field,turn[0], i, symbol)) {
-                rowCounter++;
-            }
-        }
-    //    System.out.printf("Number of X-cells at row %s: %s %n", turn[0], rowCounter);
-        return rowCounter;
+        return (int) IntStream.range(0, field.length).filter(i -> isXOCell(field, turn[0], i, symbol)).count();
     }
 
-    static int[] doAIMove(char[][] field, int[] turn) {
-        int[] move = new int[2];
-        System.out.println("Твой ход был "+ (turn[0]+1) + " " + (turn[1]+1));
-        //  System.out.printf("По линии %s:%n X:%s%n O:%s%n -:%s%n",turn[0]+1,countRow(field, turn,'X'),countRow(field, turn,'O'), countRow(field, turn,'-'));
+    static int doDetectDangerLine (char[][] field, int[] turn, char mySymbol, char yourSymbol) {
+        // Параметры mySymbol и yourSymbol планируется использовать позднее при доработке AI
         int[] maxX = new int[4];
-        if (countV(field, turn, 'O') == 0) {
-            maxX[0]= countV(field, turn,'X');
+        if (countV(field, turn, mySymbol) == 0 && countV(field, turn, '-') > 0) {
+            maxX[0]= countV(field, turn,yourSymbol);
         }
-        if (countH(field, turn, 'O') == 0) {
-            maxX[1]= countH(field, turn,'X');
+        if (countH(field, turn, mySymbol) == 0 && countH(field, turn, '-') > 0) {
+            maxX[1]= countH(field, turn,yourSymbol);
         }
-        if (countDiag1(field, turn, 'O') == 0) {
-            maxX[2]=countDiag1(field, turn,'X');
+        if (countDiag1(field, turn, mySymbol) == 0 && countDiag1(field, turn, '-') > 0) {
+            maxX[2]=countDiag1(field, turn,yourSymbol);
         }
-        if (countDiag2(field, turn, 'O') == 0) {
-            maxX[3]=countDiag2(field, turn,'X');
+        if (countDiag2(field, turn, mySymbol) == 0 && countDiag2(field, turn, '-') > 0) {
+            maxX[3]=countDiag2(field, turn,yourSymbol);
         }
-        int maxDanger = Arrays.stream(maxX).max().getAsInt();
-        //System.out.println(maxDanger);
-        //System.out.println(countDiag2(field, turn,'X'));
-        //System.out.println(countDiag2(field, turn,'-'));
-        //System.out.println(countDiag2(field, turn,'O'));
-        if (countV(field, turn,'X') == maxDanger &&
-                countV(field, turn, '-') > 0 &&
-                countV(field, turn, 'O') == 0) {
-            System.out.println("Блокируем горизонтальную линию "+ (turn[0]+1));
-            move[0] = turn[0];
-            Random random = new Random();
+        return Arrays.stream(maxX).max().getAsInt();
+    }
+    static int[] doAIMove(char[][] field, int[] turn) { // Можно было использовать void, планируется использовать позднее при доработке AI
+        System.out.println("Твой ход был "+ (turn[0]+1) + " " + (turn[1]+1));
+        int[] move = new int[2];
+        int dangerLine = doDetectDangerLine(field, turn, 'O','X');
+        Random random = new Random();
+        if (countV(field, turn,'X') == dangerLine) {
+            System.out.println("Блокирую горизонтальную линию "+ (turn[0]+1));
             do {
+                move[0] = turn[0];
                 move[1] = random.nextInt(field.length);
             } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (countH(field, turn, 'X') == maxDanger &&
-                countH(field, turn, '-') > 0 &&
-                countH(field, turn, 'O') == 0) {
-            System.out.println("Блокируем вертикальную линию " + (turn[1] + 1));
-            move[1] = turn[1];
-            Random random = new Random();
+        } else if (countH(field, turn, 'X') == dangerLine) {
+            System.out.println("Блокирую вертикальную линию " + (turn[1] + 1));
             do {
                 move[0] = random.nextInt(field.length);
+                move[1] = turn[1];
             } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (countDiag1(field, turn, 'X') == maxDanger &&
-                countDiag1(field, turn, '-') > 0 &&
-                countDiag1(field, turn, 'O') == 0) {
-            System.out.println("Блокируем диагональную линию 1");
-            Random random = new Random();
+        } else if (countDiag1(field, turn, 'X') == dangerLine) {
+            System.out.println("Блокирую диагональную линию 1");
             do {
                 move[1] = move[0] = random.nextInt(field.length);
-                //  move[1] = field.length - random.nextInt(field.length) - 1;
             } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (countDiag2(field, turn, 'X') == maxDanger &&
-                countDiag2(field, turn, '-') > 0 &&
-                countDiag2(field, turn, 'O') == 0) {
-            System.out.println("Блокируем диагональную линию 2");
-            Random random = new Random();
+        } else if (countDiag2(field, turn, 'X') == dangerLine) {
+            System.out.println("Блокирую диагональную линию 2");
             do {
                 move[0] = random.nextInt(field.length);
                 move[1] = field.length - move[0] - 1;
@@ -239,24 +208,4 @@ public class Homework04 {
         field[move[0]][move[1]] = 'O';
         return new int[] {move[0],move[1]};
     }
-
-
-
-    /**
-     * field[0][0] = 'X'
-     * isFreeCell(field, 0, 0) -> FALSE
-     * isNotFreeCell(field, 0, 0) -> !FALSE -> TRUE
-     */
-
-    /**
-     * For FUTURE
-     * static void doMove(char[][] field, Supplier<Integer> hFunc, Supplier<Integer> vFunc) {
-     * int h, v;
-     * do {
-     *  h = hFunc.get();
-     *  v = vFunc.get();
-     * } while (field[h][v] != '-');
-     * }
-     */
-
 }
