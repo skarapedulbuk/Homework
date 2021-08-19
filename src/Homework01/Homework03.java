@@ -69,8 +69,6 @@ public class Homework03 {
             print1DArray(hiddenWord);
         } while (!userWord.equals(someWords[target]));
         System.out.println("Good bye!");
-
-
     }
 
     public static void print1DArray(char [] arr) {
