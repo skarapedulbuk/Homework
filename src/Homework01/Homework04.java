@@ -101,7 +101,7 @@ public class Homework04 {
     static int[] doRandomAIMove (char[][] field) {
         int h, v;
         Random random = new Random();
-        System.out.println("Absolutely random turn!");
+        System.out.println("Здесь мог бы быть осознанный ход туда, где у меня предвыигрышная ситуация, но будет абсолютно случайный ход!");
         do {
             h = random.nextInt(field.length);
             v = random.nextInt(field.length);
