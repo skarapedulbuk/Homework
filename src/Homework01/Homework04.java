@@ -164,8 +164,8 @@ public class Homework04 {
 
     static int doDetectDangerLine (char[][] field, int[] turn, char mySymbol, char yourSymbol) {
         // Параметры mySymbol и yourSymbol планируется использовать позднее при доработке AI
-        int[] maxX = new int[4];
-        int indexMax = 0;
+        int[] maxX = new int[5];
+        int indexMax = 4;
         if (countV(field, turn, mySymbol) == 0 && countV(field, turn, '-') > 0) {
             maxX[0]= countV(field, turn,yourSymbol);
         }
@@ -190,31 +190,37 @@ public class Homework04 {
         int[] move = new int[2];
         int dangerLine = doDetectDangerLine(field, turn, 'O','X');
         Random random = new Random();
-        if (dangerLine == 0 ) {
-            System.out.println("Блокирую горизонтальную линию "+ (turn[0]+1));
-            do {
-                move[0] = turn[0];
-                move[1] = random.nextInt(field.length);
-            } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (dangerLine == 1) {
-            System.out.println("Блокирую вертикальную линию " + (turn[1] + 1));
-            do {
-                move[0] = random.nextInt(field.length);
-                move[1] = turn[1];
-            } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (dangerLine == 2) {
-            System.out.println("Блокирую диагональную линию 1");
-            do {
-                move[1] = move[0] = random.nextInt(field.length);
-            } while (isNotFreeCell(field, move[0], move[1]));
-        } else if (dangerLine == 3) {
-            System.out.println("Блокирую диагональную линию 2");
-            do {
-                move[0] = random.nextInt(field.length);
-                move[1] = field.length - move[0] - 1;
-            } while (isNotFreeCell(field, move[0], move[1]));
-        } else {
-            move = doRandomAIMove(field);
+        switch (dangerLine) {
+            case 0:
+                System.out.println("Блокирую горизонтальную линию " + (turn[0] + 1));
+                do {
+                    move[0] = turn[0];
+                    move[1] = random.nextInt(field.length);
+                } while (isNotFreeCell(field, move[0], move[1]));
+                break;
+            case 1:
+                System.out.println("Блокирую вертикальную линию " + (turn[1] + 1));
+                do {
+                    move[0] = random.nextInt(field.length);
+                    move[1] = turn[1];
+                } while (isNotFreeCell(field, move[0], move[1]));
+                break;
+            case 2:
+                System.out.println("Блокирую диагональную линию 1");
+                do {
+                    move[1] = move[0] = random.nextInt(field.length);
+                } while (isNotFreeCell(field, move[0], move[1]));
+                break;
+            case 3:
+                System.out.println("Блокирую диагональную линию 2");
+                do {
+                    move[0] = random.nextInt(field.length);
+                    move[1] = field.length - move[0] - 1;
+                } while (isNotFreeCell(field, move[0], move[1]));
+                break;
+            default:
+                move = doRandomAIMove(field);
+                break;
         }
         System.out.printf("Мой ход %s %s %n",move[0]+1,move[1]+1);
         field[move[0]][move[1]] = 'O';
